@@ -1,27 +1,24 @@
-var canvasWidth = 600;
-var canvasHeight = 400;
-
+//Variables
+var canvasWidth = 600; //tamaño del fondo del juego
+var canvasHeight = 400; //tamaño del fondo del juego
 var player;
-var playerYPosition = 200;
-
-var fallSpeed = 0;
-var interval = setInterval(updateCanvas, 20);
-
-var isJumping = false;
+var playerYPosition = 200; //variable para la posición
+var fallSpeed = 0; //variable para fallSpeed(velocidad de caida)
+var interval = setInterval(updateCanvas, 20); //intervalo
+var isJumping = false; //variable boleana para controlar el salto
 var jumpSpeed = 0;
-
 var block;
-
-// Create a score of 0 to start with
 var score = 0;
-// Create a variable to hold our scoreLabel
 var scoreLabel;
+
+/*La primera pieza de código que escribiremos establecerá un lienzo para nuestro juego. 
+Puede ajustar la altura y el ancho según sea necesario.*/
 
 function startGame() {
     gameCanvas.start();
-    player = new createPlayer(30, 30, 10);
+    player = new createPlayer(30, 30, 10); //jugador usando la función create player
     block = new createBlock();
-    // Assign your scoreLabel variable a value from scoreLabel()
+    // Asigna a la variable la puntuación un valor de scoreLabel()
     scoreLabel = new createScoreLabel(10, 30);
 }
 
@@ -35,6 +32,8 @@ var gameCanvas = {
     }
 }
 
+//funcion de crear personaje (cuadrado) y cada de sus funciones, salto
+//movimiento, detener, velocidad 
 function createPlayer(width, height, x) {
     this.width = width;
     this.height = height;
@@ -46,19 +45,25 @@ function createPlayer(width, height, x) {
         ctx.fillStyle = "green";
         ctx.fillRect(this.x, this.y, this.width, this.height);
     }
+
+    //Funcion para que el cubo caiga y no este flotando
     this.makeFall = function() {
         if (!isJumping) {
             this.y += fallSpeed;
             fallSpeed += 0.1;
-            this.stopPlayer();
+            this.stopPlayer(); //llamado a funcion para que se detanga el jugador
         }
     }
+
+    //funcion para que el jugador se detenga
     this.stopPlayer = function() {
         var ground = canvasHeight - this.height;
         if (this.y > ground) {
             this.y = ground;
         }
     }
+
+    //funcion para el salto el cuadrado
     this.jump = function() {
         if (isJumping) {
             this.y -= jumpSpeed;
@@ -84,6 +89,8 @@ function createBlock() {
         this.x -= speed;
         this.returnToAttackPosition();
     }
+
+    //fucnion para que dar efecto de movimiento
     this.returnToAttackPosition = function() {
         if (this.x < 0) {
             width = randomNumber(10, 50);
@@ -91,12 +98,14 @@ function createBlock() {
             speed = randomNumber(4, 6);
             this.y = canvasHeight - height;
             this.x = canvasWidth;
-            // Increase your score if your block made it to the edge
+            // Aumenta la puntuación si el bloque llegó al borde
             score++;
         }
     }
 }
 
+
+//Esta funcion detiene el juego una vez que ocurra una colisión.
 function detectCollision() {
     var playerLeft = player.x
     var playerRight = player.x + player.width;
@@ -114,6 +123,8 @@ function detectCollision() {
     }
 }
 
+
+//funcion para crear la caja del puntaje
 function createScoreLabel(x, y) {
     this.score = 0;
     this.x = x;
@@ -126,8 +137,10 @@ function createScoreLabel(x, y) {
     }
 }
 
+
+//función de lienzo de actualización para redibujar al jugador y hacerlo caer
 function updateCanvas() {
-    detectCollision();
+    detectCollision(); //llama a la funcion para detectar las colisiones
 
     ctx = gameCanvas.context;
     ctx.clearRect(0, 0, canvasWidth, canvasHeight);
@@ -139,7 +152,7 @@ function updateCanvas() {
     block.draw();
     block.attackPlayer();
 
-    // Redraw your score and update the value
+    // Actualiza el puntaje
     scoreLabel.text = "SCORE: " + score;
     scoreLabel.draw();
 }
@@ -147,6 +160,7 @@ function updateCanvas() {
 function randomNumber(min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min)
 }
+
 
 function resetJump() {
     jumpSpeed = 0;
